@@ -50,6 +50,18 @@ eval_hclust = function(distance, mode, centroids, input, dataname)
   return(model_cut)
 }
 
+#Function to evaluate H-Clustering especial
+eval_hclust_especial = function(distance, mode, centroids, input, dataname,cfinish)
+{
+  model = hclust(distance, method = mode)
+  model_cut= cutree(model, k = centroids)
+  input = as.data.frame(input)
+  plot(input[,1:cfinish],
+       main = paste(c("Data set", dataname), collapse = " "), sub = paste(c(mode,"H-Clust Algorithm"), collapse = " "),
+       col = model_cut)
+  return(model_cut)
+}
+
 #Function that return the sum of the Diagonal 
 sum_diagonal = function(matrix)
 {
@@ -106,11 +118,16 @@ pre_processing_especial = function(df)
   
   return(df)
 }
-
+#####################
+#Intsalling Packages#
+#####################
+install("plot3D")
+install("rgl")
 ###################
 #Loading Libraries#
 ###################
-
+library(plot3D)
+library(rgl)
 
 ################
 #Implementation#
@@ -196,7 +213,7 @@ df_good_luck = read.csv("good_luck.csv",header = F)
 #Converting class column to a factor type
 df_good_luck = pre_processing_especial(df_good_luck)
 #Visualizing data set
-plot(df_good_luck[,1:10])
+plot(df_good_luck[,1:10], col = df_good_luck$V11)
 #Aplying algorithms
 #########
 #K-Means#
@@ -208,31 +225,31 @@ confusion_matrix_evaluation(table_model_kmeans_good_luck, df_good_luck)
 ############
 #H-Clusters#
 ############
-input_hierarchical_moon = df_moon
-input_hierarchical_moon$V3 = NULL
-input_hierarchical_moon = as.matrix(input_hierarchical_moon)
-hierarchical_distance_moon = dist(input_hierarchical_moon)
+input_hierarchical_good_luck = df_good_luck
+input_hierarchical_good_luck$V11 = NULL
+input_hierarchical_good_luck = as.matrix(input_hierarchical_good_luck)
+hierarchical_distance_good_luck = dist(input_hierarchical_good_luck)
 ###############
 #Single method#
 ###############
-model_hierarchical_single_moon = eval_hclust(distance = hierarchical_distance_moon, mode = "single", centroids = 2, input = input_hierarchical_moon, dataname = "moon.csv")
-table_model_hierarchical_single_moon = confusion_matrix_convertion_hclust(df = df_moon, model = model_hierarchical_single_moon)
-table_model_hierarchical_single_moon
-confusion_matrix_evaluation(confusionMatrix = table_model_hierarchical_single_moon, dataSet = df_moon)
+model_hierarchical_single_good_luck = eval_hclust_especial(distance = hierarchical_distance_good_luck, mode = "single", centroids = 2, input = input_hierarchical_good_luck, dataname = "good_luck.csv", cfinish = 10)
+table_model_hierarchical_single_good_luck = table(df = df_good_luck$V11, model = model_hierarchical_single_good_luck)
+table_model_hierarchical_single_good_luck
+confusion_matrix_evaluation(confusionMatrix = table_model_hierarchical_single_good_luck, dataSet = df_good_luck)
 #################
 #Complete method#
 #################
-model_hierarchical_complete_moon = eval_hclust(distance = hierarchical_distance_moon, mode = "complete", centroids = 2, input = input_hierarchical_moon, dataname = "moon.csv")
-table_model_hierarchical_complete_moon = confusion_matrix_convertion_hclust(df = df_moon, model = model_hierarchical_complete_moon)
-table_model_hierarchical_complete_moon
-confusion_matrix_evaluation(table_model_hierarchical_complete_moon, df_moon)
+model_hierarchical_complete_good_luck = eval_hclust_especial(distance = hierarchical_distance_good_luck, mode = "complete", centroids = 2, input = input_hierarchical_good_luck, dataname = "good_luck.csv", cfinish = 10)
+table_model_hierarchical_complete_good_luck = table(df = df_good_luck$V11, model = model_hierarchical_complete_good_luck)
+table_model_hierarchical_complete_good_luck
+confusion_matrix_evaluation(confusionMatrix = table_model_hierarchical_complete_good_luck, dataSet = df_good_luck)
 #################
 #Average method#
 #################
-model_hierarchical_average_moon = eval_hclust(distance = hierarchical_distance_moon, mode = "average", centroids = 2, input = input_hierarchical_moon, dataname = "moon.csv")
-table_model_hierarchical_average_moon = table(True = df_moon$V3, Prediction = model_hierarchical_average_moon)
-table_model_hierarchical_average_moon
-confusion_matrix_evaluation(table_model_hierarchical_average_moon, df_moon)
+model_hierarchical_average_good_luck = eval_hclust_especial(distance = hierarchical_distance_good_luck, mode = "average", centroids = 2, input = input_hierarchical_good_luck, dataname = "good_luck.csv", cfinish = 10)
+table_model_hierarchical_average_good_luck = table(df = df_good_luck$V11, model = model_hierarchical_average_good_luck)
+table_model_hierarchical_average_good_luck
+confusion_matrix_evaluation(confusionMatrix = table_model_hierarchical_average_good_luck, dataSet = df_good_luck)
 ############################################################################################
 ############################----------------moon.csv-------------##########################
 ############################################################################################
@@ -280,3 +297,45 @@ model_hierarchical_average_moon = eval_hclust(distance = hierarchical_distance_m
 table_model_hierarchical_average_moon = table(True = df_moon$V3, Prediction = model_hierarchical_average_moon)
 table_model_hierarchical_average_moon
 confusion_matrix_evaluation(table_model_hierarchical_average_moon, df_moon)
+############################################################################################
+############################----------------h.csv-------------##########################
+############################################################################################
+###################
+#Reading h.csv#
+###################
+df_h = read.csv("h.csv",header = F)
+plot3d(x = df_h$V1, y = df_h$V2, z = df_h$V3, type = "s" ,col = df_h$V4)
+############################################################################################
+############################----------------s.csv-------------##########################
+############################################################################################
+###################
+#Reading s.csv#
+###################
+df_s = read.csv("s.csv",header = F)
+df_s$V4 = df_s$V4 + 10
+plot3d(x = df_s$V1, y = df_s$V2, z = df_s$V3, type = "s" ,col = df_s$V4)
+############################################################################################
+############################----------------help.csv-------------##########################
+############################################################################################
+###################
+#Reading help.csv#
+###################
+df_help = read.csv("help.csv",header = F)
+df_help$V4 = df_help$V4 + 10
+plot3d(x = df_help$V1, y = df_help$V2, z = df_help$V3, type = "s" ,col = df_help$V4)
+############################################################################################
+############################----------------guess.csv-------------##########################
+############################################################################################
+###################
+#Reading guess.csv#
+###################
+df_guess = read.csv("guess.csv",header = F)
+valor = rep(0,30)
+for (k in 1:30)
+{
+  model_kmeans_guess_jambu = kmeans(df_guess, k)
+  valor[k] = model_kmeans_guess_jambu$tot.withinss
+}
+
+plot(valor, col = "blue", type = "b")
+model_kmeans_guess = eval_kmeans(df = df_guess, cstart = 1, cfinish = 2, k = 4, dataname = "guess.csv")
