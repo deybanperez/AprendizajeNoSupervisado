@@ -30,6 +30,22 @@ eval_kmeans = function(df, cstart, cfinish, k, dataname)
   return(model_kmeans)
 }
 
+eval_kmeans_3D = function(df, cstart, cfinish, k, dataname)
+{
+  model_kmeans = kmeans(x = df[, cstart:cfinish], centers = k)
+  plot3d(x = df$V1, y = df$V2, z = df$V3, type = "s" ,col = df$class,
+         xlab = "Feature 1", ylab = "Feature 2", zlab = "Feature 3",
+         main = paste(c("Data Set",dataname), collapse = " ")
+         
+  points3d(model_kmeans$centers[,c("V1", "V2")],
+         col = 6:8,
+         pch = 19,
+         cex = 2)
+  
+  return(model_kmeans)
+}
+
+
 #Function to eval k-means model especial
 eval_kmeans_especial = function(df, cstart, cfinish, k, dataname)
 {
@@ -304,7 +320,33 @@ confusion_matrix_evaluation(table_model_hierarchical_average_moon, df_moon)
 #Reading h.csv#
 ###################
 df_h = read.csv("h.csv",header = F)
-plot3d(x = df_h$V1, y = df_h$V2, z = df_h$V3, type = "s" ,col = df_h$V4)
+df_h$class = 7*(df_h$V4-min(df_h$V4))/(max(df_h$V4)-min(df_h$V4))+1
+plot3d(x = df_h$V1, y = df_h$V2, z = df_h$V3, type = "s" ,col = df_h$class,
+       xlab = "Feature 1", ylab = "Feature 2", zlab = "Feature 3",
+       main = "Data Set h.csv")
+
+plot3d(x = df_h$V1, y = df_h$V2, z = df_h$V3, type = "s" ,col = model_kmeans$cluster, xlab = "Feature 1", ylab = "Feature 2", zlab = "Feature 3",
+       main = paste(c("Data Set","h.csv"), collapse = " "))
+points3d(model_kmeans$centers[,c("V1", "V2", "V3")],
+         col = rainbow(7),
+         pch = 8,
+         cex = 22)
+
+points3d(model_kmeans$centers[,c("V1", "V2", "V3")],
+         col = 1:7,
+         pch = 8, size = 22,
+         cex = 22)
+
+
+#Aplying algorithms
+#########
+#K-Means#
+#########
+model_kmeans_h = eval_kmeans(df = df_h, cstart = 1, cfinish = 3, k = 7, dataname = "h.csv")
+table_model_kmeans_moon = confusion_matrix_convertion(df = df_moon, model = model_kmeans_moon)
+table_model_kmeans_moon
+confusion_matrix_evaluation(table_model_kmeans_moon, df_moon)
+
 ############################################################################################
 ############################----------------s.csv-------------##########################
 ############################################################################################
@@ -312,8 +354,8 @@ plot3d(x = df_h$V1, y = df_h$V2, z = df_h$V3, type = "s" ,col = df_h$V4)
 #Reading s.csv#
 ###################
 df_s = read.csv("s.csv",header = F)
-df_s$V4 = df_s$V4 + 10
-plot3d(x = df_s$V1, y = df_s$V2, z = df_s$V3, type = "s" ,col = df_s$V4)
+df_s$class = 7*(df_s$V4-min(df_s$V4))/(max(df_s$V4)-min(df_s$V4))+1
+plot3d(x = df_s$V1, y = df_s$V2, z = df_s$V3, type = "s" ,col = df_s$class)
 ############################################################################################
 ############################----------------help.csv-------------##########################
 ############################################################################################
@@ -321,8 +363,8 @@ plot3d(x = df_s$V1, y = df_s$V2, z = df_s$V3, type = "s" ,col = df_s$V4)
 #Reading help.csv#
 ###################
 df_help = read.csv("help.csv",header = F)
-df_help$V4 = df_help$V4 + 10
-plot3d(x = df_help$V1, y = df_help$V2, z = df_help$V3, type = "s" ,col = df_help$V4)
+df_help$class = 7*(df_help$V4-min(df_help$V4))/(max(df_help$V4)-min(df_help$V4))+1
+plot3d(x = df_help$V1, y = df_help$V2, z = df_help$V3, type = "s" ,col = df_help$class)
 ############################################################################################
 ############################----------------guess.csv-------------##########################
 ############################################################################################
@@ -338,4 +380,4 @@ for (k in 1:30)
 }
 
 plot(valor, col = "blue", type = "b")
-model_kmeans_guess = eval_kmeans(df = df_guess, cstart = 1, cfinish = 2, k = 4, dataname = "guess.csv")
+model_kmeans_guess = eval_kmeans(df = df_guess, cstart = 1, cfinish = 2, k = 5, dataname = "guess.csv")
