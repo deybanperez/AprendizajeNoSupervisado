@@ -328,14 +328,16 @@ plot3d(x = df_h$V1, y = df_h$V2, z = df_h$V3, type = "s" ,col = df_h$class,
 plot3d(x = df_h$V1, y = df_h$V2, z = df_h$V3, type = "s" ,col = model_kmeans$cluster, xlab = "Feature 1", ylab = "Feature 2", zlab = "Feature 3",
        main = paste(c("Data Set","h.csv"), collapse = " "))
 points3d(model_kmeans$centers[,c("V1", "V2", "V3")],
-         col = rainbow(7),
+         col = "white",
          pch = 8,
          cex = 22)
 
 points3d(model_kmeans$centers[,c("V1", "V2", "V3")],
          col = 1:7,
-         pch = 8, size = 22,
-         cex = 22)
+         size = 22)
+
+spheres3d(model_kmeans$centers[,c("V1", "V2", "V3")], radius = 5,
+          col = 1:7)
 
 
 #Aplying algorithms
