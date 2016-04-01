@@ -39,7 +39,7 @@ eval_kmeans_3D = function(df, cstart, cfinish, k, dataname)
          main = paste(c("Data Set",dataname), collapse = " "))
          
   spheres3d(model_kmeans$centers[,c("V1", "V2", "V3")], radius = 5,
-            col = 1:7)
+            col = colors)
   
   return(model_kmeans)
 }
@@ -129,7 +129,7 @@ confusion_matrix_convertion_hclust = function(df, model)
 
 confusion_matrix_convertion_3D = function(df, model)
 {
-  matrix = table(True = df$class, Prediction = model$cluster)
+  matrix = table(True = floor(df$V4), Prediction = model$cluster)
   return(matrix[, max.col(matrix)])
 }
 
@@ -159,6 +159,43 @@ pre_processing_especial = function(df)
   
   return(df)
 }
+
+####################################################
+matrizconfusion <- function(class, clusters){
+  x <- table(class, clusters, dnn=c("Clase", "Cluster"))
+  posicion <- vector(mode = "numeric", length = nrow(x))
+  for (j in 1:ncol(x)) {
+    maximo <- 0
+    for (i in 1:nrow(x)) {
+      if (maximo <= x[i,j]){
+        maximo <- x[i,j]
+        posicion[j] <- i
+      }
+    }
+  }
+  colnames(x) <- 0:(ncol(x)-1)
+  z <- x
+  
+  for (i in 1:length(posicion)) {
+    z[i,] <- x[posicion[i],] 
+  }
+  return(z)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #####################
 #Intsalling Packages#
 #####################
@@ -330,7 +367,7 @@ table_model_hierarchical_complete_moon = confusion_matrix_convertion_hclust(df =
 table_model_hierarchical_complete_moon
 confusion_matrix_evaluation(table_model_hierarchical_complete_moon, df_moon)
 #################
-#Average method#
+#Average method##
 #################
 model_hierarchical_average_moon = eval_hclust(distance = hierarchical_distance_moon, mode = "average", centroids = 2, input = input_hierarchical_moon, dataname = "moon.csv")
 table_model_hierarchical_average_moon = table(True = df_moon$V3, Prediction = model_hierarchical_average_moon)
@@ -340,20 +377,36 @@ confusion_matrix_evaluation(table_model_hierarchical_average_moon, df_moon)
 ############################----------------h.csv-------------##########################
 ############################################################################################
 ###################
-#Reading h.csv#
+#Reading h.csv#####
 ###################
 df_h = read.csv("h.csv",header = F)
+df_h$V4 = floor(df_h$V4) - min(floor(df_h$V4)) +1
+summary(df_h$V4)
+
+df_h$color[df_h$V4 == 1] = "gray62"
+df_h$color[df_h$V4 == 2] = "gold2"
+df_h$color[df_h$V4 == 3] = "maroon3"
+df_h$color[df_h$V4 == 4] = "blue"
+df_h$color[df_h$V4 == 5] = "red"
+df_h$color[df_h$V4 == 6] = "green"
+df_h$color[df_h$V4 == 7] = "yellow"
+df_h$color[df_h$V4 == 8] = "magenta"
+df_h$color[df_h$V4 == 9] = "coral"
+df_h$color[df_h$V4 == 10] = "khaki"
+df_h$color[df_h$V4 == 11] = "orchid"
+
 df_h$class = 7*(df_h$V4-min(df_h$V4))/(max(df_h$V4)-min(df_h$V4))+1
 df_h$class = floor(df_h$class)
 df_h$class[df_h$class == 8] = 7
-plot3d(x = df_h$V1, y = df_h$V2, z = df_h$V3, type = "s" ,col = df_h$class,
+df_h$class = df_h$V4 - min(df_h$V4) + 1
+plot3d(x = df_h$V1, y = df_h$V2, z = df_h$V3, type = "s" ,col = df_h$color,
        xlab = "Feature 1", ylab = "Feature 2", zlab = "Feature 3",
        main = "Data Set h.csv")
 #Aplying algorithms
 #########
 #K-Means#
 #########
-model_kmeans_h = eval_kmeans_3D(df = df_h, cstart = 1, cfinish = 3, k = 7, dataname = "h.csv")
+model_kmeans_h = eval_kmeans_3D(df = df_h, cstart = 1, cfinish = 3, k = 11, dataname = "h.csv")
 table_model_kmeans_h = confusion_matrix_convertion_3D(df = df_h, model = model_kmeans_h)
 table_model_kmeans_h
 confusion_matrix_evaluation(table_model_kmeans_h, df_h)
@@ -420,7 +473,7 @@ for (k in 1:30)
 }
 
 plot(valor, col = "blue", type = "b")
-model_kmeans_guess = eval_kmeans(df = df_guess, cstart = 1, cfinish = 2, k = 5, dataname = "guess.csv"))
+model_kmeans_guess = eval_kmeans(df = df_guess, cstart = 1, cfinish = 2, k = 5, dataname = "guess.csv")
 
 
 for (i in 1:7)
