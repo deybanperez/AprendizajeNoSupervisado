@@ -33,14 +33,13 @@ eval_kmeans = function(df, cstart, cfinish, k, dataname)
 eval_kmeans_3D = function(df, cstart, cfinish, k, dataname)
 {
   model_kmeans = kmeans(x = df[, cstart:cfinish], centers = k)
-  plot3d(x = df$V1, y = df$V2, z = df$V3, type = "s" ,col = df$class,
+  
+  plot3d(x = df$V1, y = df$V2, z = df$V3, type = "s" ,col = model_kmeans$cluster,
          xlab = "Feature 1", ylab = "Feature 2", zlab = "Feature 3",
-         main = paste(c("Data Set",dataname), collapse = " ")
+         main = paste(c("Data Set",dataname), collapse = " "))
          
-  points3d(model_kmeans$centers[,c("V1", "V2")],
-         col = 6:8,
-         pch = 19,
-         cex = 2)
+  spheres3d(model_kmeans$centers[,c("V1", "V2", "V3")], radius = 5,
+            col = 1:7)
   
   return(model_kmeans)
 }
@@ -65,6 +64,19 @@ eval_hclust = function(distance, mode, centroids, input, dataname)
        col = model_cut)
   return(model_cut)
 }
+
+eval_hclust_3D = function(distance, mode, centroids, input, dataname)
+{
+  model = hclust(distance, method = mode)
+  model_cut= cutree(model, k = centroids)
+  plot3d(x = input[,1], y = input[,2], z = input[,3], type = "s",
+       main = paste(c("Data set", dataname), collapse = " "), sub = paste(c(mode,"H-Clust Algorithm"), collapse = " "),
+       xlab = "Feature 1", ylab = "Feature 2", zlab = "Feature 3",
+       col = model_cut)
+  return(model_cut)
+}
+
+
 
 #Function to evaluate H-Clustering especial
 eval_hclust_especial = function(distance, mode, centroids, input, dataname,cfinish)
@@ -115,6 +127,19 @@ confusion_matrix_convertion_hclust = function(df, model)
   return(matrix[, max.col(matrix)])
 }
 
+confusion_matrix_convertion_3D = function(df, model)
+{
+  matrix = table(True = df$class, Prediction = model$cluster)
+  return(matrix[, max.col(matrix)])
+}
+
+confusion_matrix_convertion_hclust_3D = function(df, model)
+{
+  matrix = table(True = df$class, Prediction = model)
+  return(matrix[, max.col(matrix)])
+}
+
+
 #Preprocessing function
 pre_processing = function(df)
 {
@@ -137,12 +162,10 @@ pre_processing_especial = function(df)
 #####################
 #Intsalling Packages#
 #####################
-install("plot3D")
 install("rgl")
 ###################
 #Loading Libraries#
 ###################
-library(plot3D)
 library(rgl)
 
 ################
@@ -321,34 +344,49 @@ confusion_matrix_evaluation(table_model_hierarchical_average_moon, df_moon)
 ###################
 df_h = read.csv("h.csv",header = F)
 df_h$class = 7*(df_h$V4-min(df_h$V4))/(max(df_h$V4)-min(df_h$V4))+1
+df_h$class = floor(df_h$class)
+df_h$class[df_h$class == 8] = 7
 plot3d(x = df_h$V1, y = df_h$V2, z = df_h$V3, type = "s" ,col = df_h$class,
        xlab = "Feature 1", ylab = "Feature 2", zlab = "Feature 3",
        main = "Data Set h.csv")
-
-plot3d(x = df_h$V1, y = df_h$V2, z = df_h$V3, type = "s" ,col = model_kmeans$cluster, xlab = "Feature 1", ylab = "Feature 2", zlab = "Feature 3",
-       main = paste(c("Data Set","h.csv"), collapse = " "))
-points3d(model_kmeans$centers[,c("V1", "V2", "V3")],
-         col = "white",
-         pch = 8,
-         cex = 22)
-
-points3d(model_kmeans$centers[,c("V1", "V2", "V3")],
-         col = 1:7,
-         size = 22)
-
-spheres3d(model_kmeans$centers[,c("V1", "V2", "V3")], radius = 5,
-          col = 1:7)
-
-
 #Aplying algorithms
 #########
 #K-Means#
 #########
-model_kmeans_h = eval_kmeans(df = df_h, cstart = 1, cfinish = 3, k = 7, dataname = "h.csv")
-table_model_kmeans_moon = confusion_matrix_convertion(df = df_moon, model = model_kmeans_moon)
-table_model_kmeans_moon
-confusion_matrix_evaluation(table_model_kmeans_moon, df_moon)
+model_kmeans_h = eval_kmeans_3D(df = df_h, cstart = 1, cfinish = 3, k = 7, dataname = "h.csv")
+table_model_kmeans_h = confusion_matrix_convertion_3D(df = df_h, model = model_kmeans_h)
+table_model_kmeans_h
+confusion_matrix_evaluation(table_model_kmeans_h, df_h)
+############
+#H-Clusters#
+############
+input_hierarchical_h = df_h
+input_hierarchical_h$V4 = NULL
+input_hierarchical_h$class = NULL
 
+input_hierarchical_h = as.matrix(input_hierarchical_h)
+hierarchical_distance_h = dist(input_hierarchical_h)
+###############
+#Single method#
+###############
+model_hierarchical_single_h = eval_hclust_3D(distance = hierarchical_distance_h, mode = "single", centroids = 7, input = input_hierarchical_h, dataname = "h.csv")
+table_model_hierarchical_single_h = table(True = df_h$class, Prediction = model_hierarchical_single_h)
+table_model_hierarchical_single_h
+confusion_matrix_evaluation(confusionMatrix = table_model_hierarchical_single_h, dataSet = df_h )
+###############
+#Complete method#
+###############
+model_hierarchical_complete_h = eval_hclust_3D(distance = hierarchical_distance_h, mode = "complete", centroids = 7, input = input_hierarchical_h, dataname = "h.csv")
+table_model_hierarchical_complete_h = table(True = df_h$class, Prediction = model_hierarchical_complete_h)
+table_model_hierarchical_complete_h
+confusion_matrix_evaluation(confusionMatrix = table_model_hierarchical_complete_h, dataSet = df_h )
+###############
+#Complete method#
+###############
+model_hierarchical_average_h = eval_hclust_3D(distance = hierarchical_distance_h, mode = "average", centroids = 7, input = input_hierarchical_h, dataname = "h.csv")
+table_model_hierarchical_average_h = table(True = df_h$class, Prediction = model_hierarchical_average_h)
+table_model_hierarchical_average_h
+confusion_matrix_evaluation(confusionMatrix = table_model_hierarchical_average_h, dataSet = df_h )
 ############################################################################################
 ############################----------------s.csv-------------##########################
 ############################################################################################
@@ -382,4 +420,16 @@ for (k in 1:30)
 }
 
 plot(valor, col = "blue", type = "b")
-model_kmeans_guess = eval_kmeans(df = df_guess, cstart = 1, cfinish = 2, k = 5, dataname = "guess.csv")
+model_kmeans_guess = eval_kmeans(df = df_guess, cstart = 1, cfinish = 2, k = 5, dataname = "guess.csv"))
+
+
+for (i in 1:7)
+{
+  df_h$distance[model_kmeans_h$centers == i] = dist(rbind(c(model)))
+  
+}
+
+for(i in 1:7)
+{
+  a[i] = which.is.max(table_model_hierarchical_average_h[i,])
+}
