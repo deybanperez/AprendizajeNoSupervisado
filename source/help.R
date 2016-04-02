@@ -1,4 +1,4 @@
-df_help = read.csv("help.csv",header = F)
+df_help = read.csv("data/help.csv",header = F)
 df_help$V5 = floor(df_help$V4) - min(floor(df_help$V4)) +1
 plot(df_help[,1:3], col= get_colors(20, df_help),
      main = "Matriz Dispersion help.csv")

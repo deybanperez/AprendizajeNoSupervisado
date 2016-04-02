@@ -1,7 +1,7 @@
 ###############
 #Reading a.csv#
 ###############
-df_a = read.csv("a.csv",header = F)
+df_a = read.csv("data/a.csv",header = F)
 #Converting class column to a factor type
 df_a = pre_processing(df_a)
 #Visualizing data set

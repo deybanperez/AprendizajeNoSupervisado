@@ -1,7 +1,7 @@
 ###################
 #Reading moon.csv#
 ###################
-df_moon = read.csv("moon.csv",header = F)
+df_moon = read.csv("data/moon.csv",header = F)
 #Converting class column to a factor type
 df_moon = pre_processing(df_moon)
 #Visualizing data set

@@ -1,7 +1,7 @@
 ###################
 #Reading good_lock.csv#
 ###################
-df_good_luck = read.csv("good_luck.csv",header = F)
+df_good_luck = read.csv("data/good_luck.csv",header = F)
 #Converting class column to a factor type
 df_good_luck = pre_processing_especial(df_good_luck)
 #Visualizing data set
