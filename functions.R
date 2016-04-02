@@ -53,18 +53,13 @@ eval_kmeans_especial = function(df, cstart, cfinish, k, dataname)
   return(model_kmeans)
 }
 
-#Function to eval k-means on #D data sets
+#Function to eval k-means on 3D data sets
 eval_kmeans_3D = function(df, cstart, cfinish, k, dataname)
 {
   model_kmeans = kmeans(x = df[, cstart:cfinish], centers = k)
-  
   plot3d(x = df$V1, y = df$V2, z = df$V3, type = "s" ,col = model_kmeans$cluster,
          xlab = "Feature 1", ylab = "Feature 2", zlab = "Feature 3",
          main = paste(c("Data Set",dataname), collapse = " "))
-  
-  spheres3d(model_kmeans$centers[,c("V1", "V2", "V3")], radius = 5,
-            col = colors)
-  
   return(model_kmeans)
 }
 
@@ -96,7 +91,6 @@ eval_hclust_especial = function(distance, mode, centroids, input, dataname,cfini
 confusion_matrix = function(class, cluster)
 {
   return(table(True = class, Predicted = cluster))
-
 }
 
 #Function that order the diagonal of a matrix
@@ -142,5 +136,5 @@ get_colors = function(number, df)
   set.seed(22)
   index = sample(1:502,number, replace = F)
   colors = colors(distinct = T)[index]
-  return(colors[as.integer(df$V4-min(df$V4)+1)])
+  return(colors[as.integer(df$V5-min(df$V5)+1)])
 }
