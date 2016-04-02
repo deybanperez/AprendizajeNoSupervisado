@@ -86,6 +86,17 @@ eval_hclust_especial = function(distance, mode, centroids, input, dataname,cfini
        col = model_cut)
   return(model_cut)
 }
+#Function to evaluate H-Clustering 3D
+eval_hclust_3D = function(distance, mode, centroids, input, dataname)
+{
+  model = hclust(distance, method = mode)
+  model_cut= cutree(model, k = centroids)
+  plot3d(x = input[,1], y = input[,2], z = input[,3], type = "s",
+         main = paste(c("Data set", dataname), collapse = " "), sub = paste(c(mode,"H-Clust Algorithm"), collapse = " "),
+         xlab = "Feature 1", ylab = "Feature 2", zlab = "Feature 3",
+         col = model_cut)
+  return(model_cut)
+}
 
 
 confusion_matrix = function(class, cluster)
@@ -101,10 +112,49 @@ order_confusion_matrix = function(confusionMatrix)
   for (i in 1:ncol(confusionMatrix))
   {
     positions = which(confusionMatrix == max(confusionMatrix), arr.ind = T)
-    auxiliar[, positions[1,1]] = confusionMatrix[,positions[1,2]]
-    confusionMatrix[,positions[1,2]] = vector(mode = "numeric", length = nrow(confusionMatrix))
+    
+    #If the column is empty
+    if(zeros_colum(auxiliar[, positions[1,1]]))
+    {
+      auxiliar[, positions[1,1]] = confusionMatrix[,positions[1,2]]
+      confusionMatrix[,positions[1,2]] = vector(mode = "numeric", length = nrow(confusionMatrix))
+    }else
+    {
+      for (j in 1:ncol(auxiliar))
+      {
+        if(zeros_colum(auxiliar[,j]))
+          break
+      }
+      
+      if(auxi[positions[1,1], positions[1,1]] >= confusionMatrix[positions[1,1], positions[1,2]])
+      {
+        auxiliar[, j] = confusionMatrix[,positions[1,2]]
+        confusionMatrix[,positions[1,2]] = vector(mode = "numeric", length = nrow(confusionMatrix))
+      }
+      else
+      {
+        auxiliar[, j] = auxiliar[, positions[1,1]]
+        auxiliar[, positions[1,1]] = confusionMatrix[,positions[1,2]]
+        confusionMatrix[,positions[1,2]] = vector(mode = "numeric", length = nrow(confusionMatrix))
+      }
+    }
   }
+  rownames(auxiliar) <- rownames(auxiliar, do.NULL = FALSE, prefix = "TC")
+  colnames(auxiliar) <- colnames(auxiliar, do.NULL = FALSE, prefix = "PC")
+
   return(auxiliar)
+}
+
+
+#Function that evalue is all the column is zero
+zeros_colum = function(column)
+{
+  for (i in 1:length(column))
+  {
+    if(column[i] > 0)
+      return(FALSE)
+  }
+  return(TRUE)
 }
 
 #Function that return the sum of the Diagonal 

@@ -416,7 +416,6 @@ confusion_matrix_evaluation(table_model_kmeans_h, df_h)
 input_hierarchical_h = df_h
 input_hierarchical_h$V4 = NULL
 input_hierarchical_h$class = NULL
-
 input_hierarchical_h = as.matrix(input_hierarchical_h)
 hierarchical_distance_h = dist(input_hierarchical_h)
 ###############
