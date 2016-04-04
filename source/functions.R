@@ -188,3 +188,12 @@ get_colors = function(number, df)
   colors = colors(distinct = T)[index]
   return(colors[as.integer(df$V5-min(df$V5)+1)])
 }
+
+
+euc.dist = function(x1, y1, x2, y2)
+{
+  return( sqrt( ((x1 - x2) ^ 2) + ((y1 - y2) ^ 2)) )
+}
+
+
+

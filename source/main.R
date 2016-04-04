@@ -7,7 +7,7 @@ install("rgl")
 ###################
 library(rgl)
 
-source(file = "functions.R")
+source(file = "source/functions.R")
 source(file = "a.R")
 source(file = "a_big.R")
 source(file = "good_luck.R")
