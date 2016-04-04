@@ -5,7 +5,7 @@ install = function(pkg)
   if (!require(pkg, character.only = TRUE))
   {
     install.packages(pkg)
-    if (!require(pkg, character.only = TRUE))
+    if (!require(pkg, character.only = TRUE, respos = "http://cran.rstudio.com/"))
       stop(paste("load failure:", pkg))
   }
 }
