@@ -18,11 +18,10 @@ confusion_matrix_evaluation(table_model_kmeans_a_big, nrow(df_a_big))
 ######################
 #Implementing K-Means#
 ######################
-
 #Making a stratified sampling
 ############################################################################
 #Calculating probabilities for each element into dataset
-prob_1 = 1/sum(df_a_big[,"V3"] == 1);
+prob_1 = 1/sum(df_a_big[, "V3"] == 1);
 prob_2 = 1/sum(df_a_big[,"V3"] == 2);
 prob_3 = 1/sum(df_a_big[,"V3"] == 3);
 ############################################################################
@@ -34,40 +33,36 @@ probabilities[df_a_big[,"V3"] == 3] = prob_3
 ##############################################################################
 #Splitting data into training and testing sets
 set.seed(777)
-sub = sample(nrow(df_a_big), floor(nrow(df_a_big) * 0.01), prob = probabilities, replace = F)
-subset <- df_a_big[sub, ]
-##############################################################################
-#Visializing proportions for training
-sum(subset[,"V3"] == 1)
-sum(subset[,"V3"] == 2)
-sum(subset[,"V3"] == 3)
-#Visualizing data set
-plot(subset[,1:2], col = subset$V3,
-     xlab = "Feature 1", ylab = "Feature 2",
-     main = "subset_a_big.csv")
-
-#Selecting random centroids
-
-centroids = matrix(0L, nrow = 3, ncol = 2)
+best = 0
+for (i in 1:50)
 {
-  for (i in 1:nrow(centroids))
+  sub = sample(nrow(df_a_big), floor(nrow(df_a_big) * 0.01),
+               prob = probabilities, replace = F)
+  
+  subset <- df_a_big[sub, ]
+  
+  model_temporal = K_Means_Deyban(subset, 3)
+  table_model_kmeans_deyban_a_big = order_confusion_matrix(confusion_matrix(subset$V3, model_temporal[[2]]))
+  temporal = confusion_matrix_evaluation_deyban(table_model_kmeans_deyban_a_big, nrow(subset))
+  
+  if(temporal > best)
   {
-    centroids[i,1] = runif(1, min(subset$V1), max(subset$V1))
-    centroids[i,2] = runif(1, min(subset$V2), max(subset$V2))
+    best_centroids = model_temporal[[1]]
+    best_klusters = model_temporal[[2]]
+    best = temporal
   }
 }
 
-#Calculing the distance between points and centroids
-distance_matrix = matrix(0L, nrow = nrow(subset), ncol = nrow(centroids))
+best
+table_model = order_confusion_matrix(confusion_matrix(subset$V3, best_klusters))
 
-for (i in 1:nrow(centroids))
-{
-  distance_matrix[,i] = euc.dist(centroids[i,1], centroids[i,2], subset[,1], subset[,2])
-}
+confusion_matrix_evaluation(table_model, nrow(subset))
 
-
-which.min(distance_matrix[2998,])
-
-
-distance_matrix
+plot(subset[, 1:2], col = best_klusters,
+     main = paste(c("Data set", "Deyban"), collapse = " "), sub = "K-means algorithm",
+     xlab = "Feature 1", ylab = "Feature 2")
+points(best_centroids[,1:2],
+       col = 6:8,
+       pch = 19,
+       cex = 2)
 
