@@ -218,12 +218,14 @@ K_Means_Deyban = function(df, k, c = NULL)
   }else
     centroids = c
   
-  
-  
   #Initializing clusters vector
   clusters = vector(mode = "numeric", length = nrow(df))
   #Initializing Distance Matrix
   distance_matrix = matrix(0L, nrow = nrow(df), ncol = nrow(centroids))
+  
+  c1 = 0
+  c2 = 0
+  c3 = 0
   
   for(n in 1:50)
   {
@@ -245,30 +247,26 @@ K_Means_Deyban = function(df, k, c = NULL)
         sum(df[clusters[clusters == i],2])
     }
     
-    #Evaluating the change about clusters between iterations
-    if(n == 1)
-    {
-      c1 = length(clusters[clusters == 1])
-      c2 = length(clusters[clusters == 2])
-      c3 = length(clusters[clusters == 3])
-    }else
+    #Evaluating the change about clusters between iteration
+    if(n > 1)
     {
       c1.temp = length(clusters[clusters == 1])
       c2.temp = length(clusters[clusters == 2])
-      c3.temp = length(clusters[clusters == 3])
+      c3.temp = length(clusters[clusters == 3])  
       
-      if( ((c1 - c1.temp) == 0) && ((c2 - c1.temp) == 0)
-          && ((c3 - c3.temp) == 0))
+      if((c1 == c1.temp) && (c2 == c2.temp) && (c3 == c3.temp))
       {
         my_list = list(centroids, clusters)
         return(my_list)
-      }else
+      }
+      else
       {
         c1 = c1.temp
         c2 = c2.temp
-        c3 =c3.temp
+        c3 = c3.temp
       }
     }
+    
   }
   my_list = list(centroids, clusters)
   return(my_list)

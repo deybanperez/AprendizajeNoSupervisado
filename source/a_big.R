@@ -32,10 +32,10 @@ probabilities[df_a_big[,"V3"] == 2] = prob_2
 probabilities[df_a_big[,"V3"] == 3] = prob_3
 ##############################################################################
 #Splitting data into training and testing sets
-set.seed(777)
+set.seed(22)
 best = 0
 
-sub = sample(nrow(df_a_big), floor(nrow(df_a_big) * 0.01),
+sub = sample(nrow(df_a_big), floor(nrow(df_a_big) * 0.1),
              prob = probabilities, replace = F)
 
 subset <- df_a_big[sub, ]
