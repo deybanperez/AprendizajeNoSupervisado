@@ -27,24 +27,24 @@ K_Means_Deyban = function(df, k, class)
     #Finding new centroids
     for (i in 1:nrow(centroids))
     {
-      centroids[i,1] = (1/sum(clusters[clusters == i])) *
+      centroids[i,1] = (1/length(clusters[clusters == i])) *
         sum(df[clusters[clusters == i],1])
       
-      centroids[i,2] = (1/sum(clusters[clusters == i])) *
+      centroids[i,2] = (1/length(clusters[clusters == i])) *
         sum(df[clusters[clusters == i],2])
     }
     
     #Evaluating the change about clusters between iterations
     if(n == 1)
     {
-      c1 = sum(clusters[clusters == 1])
-      c2 = sum(clusters[clusters == 2])
-      c3 =sum(clusters[clusters == 3])
+      c1 = length(clusters[clusters == 1])
+      c2 = length(clusters[clusters == 2])
+      c3 = length(clusters[clusters == 3])
     }else
     {
-      c1.temp = sum(clusters[clusters == 1])
-      c2.temp = sum(clusters[clusters == 2])
-      c3.temp = sum(clusters[clusters == 3])
+      c1.temp = length(clusters[clusters == 1])
+      c2.temp = length(clusters[clusters == 2])
+      c3.temp = length(clusters[clusters == 3])
       
       if( ((c1 - c1.temp) == 0) && ((c2 - c1.temp) == 0)
           && ((c3 - c3.temp) == 0))

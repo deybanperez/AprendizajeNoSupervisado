@@ -107,7 +107,7 @@ confusion_matrix = function(class, cluster)
 #Function that order the diagonal of a matrix
 order_confusion_matrix = function(confusionMatrix)
 {
-  auxiliar = matrix(0, nrow = nrow(confusionMatrix), ncol = ncol(confusionMatrix))
+  auxiliar = matrix(0, nrow = nrow(confusionMatrix), ncol = nrow(confusionMatrix))
   
   for (i in 1:ncol(confusionMatrix))
   {
@@ -203,23 +203,29 @@ euc.dist = function(x1, y1, x2, y2)
   return( sqrt( ((x1 - x2) ^ 2) + ((y1 - y2) ^ 2)) )
 }
 
-K_Means_Deyban = function(df, k, class)
+K_Means_Deyban = function(df, k, c = NULL)
 {
   #Selecting random centroids
   centroids = matrix(0L, nrow = k, ncol = 2)
   
-  for (i in 1:nrow(centroids))
+  if(is.null(c))
   {
-    centroids[i,1] = runif(1, min(df$V1), max(df$V1))
-    centroids[i,2] = runif(1, min(df$V2), max(df$V2))
-  }
+    for (i in 1:nrow(centroids))
+    {
+      centroids[i,1] = runif(1, min(df$V1), max(df$V1))
+      centroids[i,2] = runif(1, min(df$V2), max(df$V2))
+    }
+  }else
+    centroids = c
+  
+  
   
   #Initializing clusters vector
   clusters = vector(mode = "numeric", length = nrow(df))
   #Initializing Distance Matrix
   distance_matrix = matrix(0L, nrow = nrow(df), ncol = nrow(centroids))
   
-  for(n in 1:30)
+  for(n in 1:50)
   {
     #Calculing the distance between points and centroids
     for (i in 1:nrow(centroids))
@@ -232,24 +238,24 @@ K_Means_Deyban = function(df, k, class)
     #Finding new centroids
     for (i in 1:nrow(centroids))
     {
-      centroids[i,1] = (1/sum(clusters[clusters == i])) *
+      centroids[i,1] = (1/length(clusters[clusters == i])) *
         sum(df[clusters[clusters == i],1])
       
-      centroids[i,2] = (1/sum(clusters[clusters == i])) *
+      centroids[i,2] = (1/length(clusters[clusters == i])) *
         sum(df[clusters[clusters == i],2])
     }
     
     #Evaluating the change about clusters between iterations
     if(n == 1)
     {
-      c1 = sum(clusters[clusters == 1])
-      c2 = sum(clusters[clusters == 2])
-      c3 =sum(clusters[clusters == 3])
+      c1 = length(clusters[clusters == 1])
+      c2 = length(clusters[clusters == 2])
+      c3 = length(clusters[clusters == 3])
     }else
     {
-      c1.temp = sum(clusters[clusters == 1])
-      c2.temp = sum(clusters[clusters == 2])
-      c3.temp = sum(clusters[clusters == 3])
+      c1.temp = length(clusters[clusters == 1])
+      c2.temp = length(clusters[clusters == 2])
+      c3.temp = length(clusters[clusters == 3])
       
       if( ((c1 - c1.temp) == 0) && ((c2 - c1.temp) == 0)
           && ((c3 - c3.temp) == 0))
@@ -267,5 +273,4 @@ K_Means_Deyban = function(df, k, class)
   my_list = list(centroids, clusters)
   return(my_list)
 }
-
 
