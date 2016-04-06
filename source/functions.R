@@ -208,6 +208,7 @@ K_Means_Deyban = function(df, k, c = NULL)
   #Selecting random centroids
   centroids = matrix(0L, nrow = k, ncol = 2)
   
+  # If You dont hace centroids, choose random centroids
   if(is.null(c))
   {
     for (i in 1:nrow(centroids))
@@ -215,7 +216,7 @@ K_Means_Deyban = function(df, k, c = NULL)
       centroids[i,1] = runif(1, min(df$V1), max(df$V1))
       centroids[i,2] = runif(1, min(df$V2), max(df$V2))
     }
-  }else
+  }else #Take centroids from parameters
     centroids = c
   
   #Initializing clusters vector
@@ -223,10 +224,12 @@ K_Means_Deyban = function(df, k, c = NULL)
   #Initializing Distance Matrix
   distance_matrix = matrix(0L, nrow = nrow(df), ncol = nrow(centroids))
   
+  #Initializing the number of elementes by cluster
   c1 = 0
   c2 = 0
   c3 = 0
   
+  # Beginning the algorithm
   for(n in 1:50)
   {
     #Calculing the distance between points and centroids
@@ -254,12 +257,13 @@ K_Means_Deyban = function(df, k, c = NULL)
       c2.temp = length(clusters[clusters == 2])
       c3.temp = length(clusters[clusters == 3])  
       
-      if((c1 == c1.temp) && (c2 == c2.temp) && (c3 == c3.temp))
+      if((c1 == c1.temp) && (c2 == c2.temp) && (c3 == c3.temp)) # If the elements between iterations dont have changes
       {
+        #return
         my_list = list(centroids, clusters)
         return(my_list)
       }
-      else
+      else # Update values
       {
         c1 = c1.temp
         c2 = c2.temp
@@ -268,6 +272,7 @@ K_Means_Deyban = function(df, k, c = NULL)
     }
     
   }
+  #Return
   my_list = list(centroids, clusters)
   return(my_list)
 }

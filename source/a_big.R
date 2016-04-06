@@ -48,7 +48,7 @@ for (i in 1:50)
   if(temporal > best)
   {
     best_centroids = model_temporal[[1]]
-    best_klusters = model_temporal[[2]]
+    best_clusters = model_temporal[[2]]
     best = temporal
   }
 }
@@ -74,7 +74,7 @@ rate_big = confusion_matrix_evaluation_deyban(table_model_kmeans_model_big, nrow
 rate_big
 
 plot(df_a_big[, 1:2], col = model_big[[2]],
-     main = paste(c("Data set", "Deyban"), collapse = " "), sub = "K-means algorithm",
+     main = paste(c("Data set", "a_big.csv"), collapse = " "), sub = "K-means propio",
      xlab = "Feature 1", ylab = "Feature 2")
 
 points(model_big[[1]][,1:2],

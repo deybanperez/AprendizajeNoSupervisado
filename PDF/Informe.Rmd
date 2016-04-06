@@ -2,7 +2,7 @@
 title: "Aprendizaje No Supervisado"
 author: "Deyban Pérez"
 date: "Abril 3, 2016"
-output: pdf_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -43,6 +43,7 @@ Una vez que se haya instalado la biblioteca, debemos cargarla, haciendo usod el 
 
 ```{r Cargando biblioteca rgl}
 library(rgl)
+library(knitr)
 ```
 
 # **Implementación**
@@ -64,7 +65,7 @@ pre_processing = function(df)
 }
 ```
 
-### **Pre-Procesamiento de datos especial para **good_luck.csv**
+### **Pre-Procesamiento de datos especial para good_luck.csv**
 
 El conjunto de datos **good_luck.csv** Tiene la columna de clases en la posición once (11), por ello se creó una función especial para este caso.
 
@@ -232,7 +233,7 @@ sum_diagonal = function(matrix)
 {
   returnValue = 0;
   
-  for (i in 1:nrow(matrix))
+  for (i in 1:ncol(matrix))
   {
     returnValue = returnValue + matrix[i,i]
   }
@@ -284,7 +285,7 @@ order_confusion_matrix = function(confusionMatrix)
           break
       }
       
-      if(auxi[positions[1,1], positions[1,1]] >= confusionMatrix[positions[1,1],
+      if(auxiliar[positions[1,1], positions[1,1]] >= confusionMatrix[positions[1,1],
                                                                  positions[1,2]])
       {
         auxiliar[, j] = confusionMatrix[,positions[1,2]]
@@ -305,6 +306,132 @@ order_confusion_matrix = function(confusionMatrix)
 
   return(auxiliar)
 }
+```
+
+### **Tasa de acierto del modelo para mi implementación de K-Means**
+
+Función que retona exclusivamente la tasa de acierto de un modelo.
+
+```{r}
+confusion_matrix_evaluation_deyban = function(confusionMatrix, numberRows)
+{
+  hits = sum_diagonal(confusionMatrix)
+  hits
+  hitRate = hits / numberRows * 100
+  return(hitRate)
+}
+```
+
+### **Función que retorna la distancia euclediana entre dos puntos**
+
+```{r}
+euc.dist = function(x1, y1, x2, y2)
+{
+  return( sqrt( ((x1 - x2) ^ 2) + ((y1 - y2) ^ 2)) )
+}
+```
+
+### **Implementación de K-Means**
+
+```{r}
+K_Means_Deyban = function(df, k, c = NULL)
+{
+  #Selecting random centroids
+  centroids = matrix(0L, nrow = k, ncol = 2)
+  
+  # If You dont hace centroids, choose random centroids
+  if(is.null(c))
+  {
+    for (i in 1:nrow(centroids))
+    {
+      centroids[i,1] = runif(1, min(df$V1), max(df$V1))
+      centroids[i,2] = runif(1, min(df$V2), max(df$V2))
+    }
+  }else #Take centroids from parameters
+    centroids = c
+  
+  #Initializing clusters vector
+  clusters = vector(mode = "numeric", length = nrow(df))
+  #Initializing Distance Matrix
+  distance_matrix = matrix(0L, nrow = nrow(df), ncol = nrow(centroids))
+  
+  #Initializing the number of elementes by cluster
+  c1 = 0
+  c2 = 0
+  c3 = 0
+  
+  # Beginning the algorithm
+  for(n in 1:50)
+  {
+    #Calculing the distance between points and centroids
+    for (i in 1:nrow(centroids))
+      distance_matrix[,i] = euc.dist(centroids[i,1],
+                                     centroids[i,2], df[,1], df[,2])
+    #Assigning elements to a cluster
+    for (i in 1:length(clusters))
+      clusters[i] = which.min(distance_matrix[i,])
+    
+    #Finding new centroids
+    for (i in 1:nrow(centroids))
+    {
+      centroids[i,1] = (1/length(clusters[clusters == i])) *
+        sum(df[clusters[clusters == i],1])
+      
+      centroids[i,2] = (1/length(clusters[clusters == i])) *
+        sum(df[clusters[clusters == i],2])
+    }
+    
+    #Evaluating the change about clusters between iteration
+    if(n > 1)
+    {
+      c1.temp = length(clusters[clusters == 1])
+      c2.temp = length(clusters[clusters == 2])
+      c3.temp = length(clusters[clusters == 3])  
+      
+      if((c1 == c1.temp) && (c2 == c2.temp) && (c3 == c3.temp)) # If the elements between iterations dont have changes
+      {
+        #return
+        my_list = list(centroids, clusters)
+        return(my_list)
+      }
+      else # Update values
+      {
+        c1 = c1.temp
+        c2 = c2.temp
+        c3 = c3.temp
+      }
+    }
+  }
+  #Return
+  my_list = list(centroids, clusters)
+  return(my_list)
+}
+```
+
+
+```{r}
+hook_webgl = function(before, options, envir) {
+  library(rgl)
+  ## after a chunk has been evaluated
+  if (before || rgl.cur() == 0) return()  # no active device
+  name = tempfile('rgl', '.', '.html'); on.exit(unlink(name))
+  par3d(windowRect = 100 + options$dpi * c(0, 0, options$fig.width, options$fig.height))
+  Sys.sleep(.05) # need time to respond to window size change
+
+  writeLines(c('%WebGL%', '<script>webGLStart();</script>'), tpl <- tempfile())
+  writeWebGL(dir = dirname(name), filename = name, template = tpl)
+  res = readLines(name)
+  res = res[!grepl('^\\s*$', res)] # remove blank lines
+  paste(gsub('^\\s*<', '<', res), collapse = '\n') # no spaces before HTML tags
+}
+
+```
+
+
+
+
+```{r}
+knit_hooks$set(webgl = hook_webgl)
 ```
 
 
@@ -511,27 +638,343 @@ En el gráfico podemos observar tres (3) clusters juntos ocn una forma más o me
 
 ### **Aplicando los algoritmos**
 
-Cómo se mencionó más arriba, sólo podremos aplicar el algoritmo de **K-Medias** para clusterizar debido a que con **H-Clust** la matriz de distancias es demasiado grande y no cabe en memoria principal.
+Cómo se mencionó más arriba, sólo podremos aplicar el algoritmo de **K-Medias** para clusterizar debido a que con **H-Clust** la matriz de distancias es demasiado grande y no cabe en memoria principal, comenzaremos primero con la versión del algoritmo propuesta por **R**.
 
-#### **Generando el modelo**
+#### **K-Medias**
+
+##### **Generando el modelo**
 
 ```{r K-Medias a_big.csv}
-model_kmeans_a_big = eval_kmeans(df = df_a_big, cstart = 1, cfinish = 2, k = 3, dataname = "a_big.csv")
+model_kmeans_a_big = eval_kmeans(df = df_a_big, cstart = 1,
+                                 cfinish = 2, k = 3, dataname = "a_big.csv")
 ```
 
 ##### **Generando la matriz de confusión** 
 
 ```{r Matriz de confusion a_big K-medias}
-table_model_kmeans_a_big = order_confusion_matrix(confusion_matrix(df_a_big$V3, model_kmeans_a_big$cluster))
+table_model_kmeans_a_big = order_confusion_matrix(
+  confusion_matrix(df_a_big$V3, model_kmeans_a_big$cluster))
 table_model_kmeans_a_big
 ```
 
-#### Evaluando la matriz de confusión
+##### Evaluando la matriz de confusión
 
 ```{r Calculando tasa de aciertos K-Medias}
 confusion_matrix_evaluation(table_model_kmeans_a_big, nrow(df_a_big))
 ```
 
-#### Conclusión
+##### Conclusión
 
 K-Medias por su naturaleza de buscar formas circulares se ajusta de manera excelente a este problema, adicionalmente la implementación hace que el conjunto de datos gigante no sea un problema, pero es una variante especial llamada **Large k-Means** el algortimo que se aplica por detrás de la llamada a la función.
+
+#### **K-Means personalizado
+
+Debido al gran tamaño de **a_big.csv** es conveniente hacer un muestreo reducido del conjunto total de los datos para correr el algorimo y pre-seleccionar centroides que ayuden a la velocidad de convergencia cuándo tratemos con el conjunto completo de los datos.
+
+#### **Sampling de los Datos**
+
+#### **Calculando la probabilidad de cada elemento para ser seleccionado**
+
+```{r}
+prob_1 = 1/sum(df_a_big[, "V3"] == 1)
+prob_2 = 1/sum(df_a_big[,"V3"] == 2)
+prob_3 = 1/sum(df_a_big[,"V3"] == 3)
+```
+
+#### **Reservando espacio para el vector de probabilidades**
+
+```{r}
+probabilities = vector(mode = "numeric", length = nrow(df_a_big))
+```
+
+#### **Asignando las probabilidades a cada elemento**
+
+```{r}
+probabilities[df_a_big[,"V3"] == 1] = prob_1
+probabilities[df_a_big[,"V3"] == 2] = prob_2
+probabilities[df_a_big[,"V3"] == 3] = prob_3
+```
+
+#### **Tomando la muestra del conjunto completo**
+
+```{r}
+set.seed(22)
+best = 0
+
+sub = sample(nrow(df_a_big), floor(nrow(df_a_big) * 0.1),
+             prob = probabilities, replace = F)
+
+subset <- df_a_big[sub, ]
+```
+
+#### **Precalculando los mejores centroides
+
+```{r}
+for (i in 1:50)
+{
+  model_temporal = K_Means_Deyban(subset, k = 3)
+  table_model_kmeans_deyban_a_big = order_confusion_matrix(
+    confusion_matrix(subset$V3, model_temporal[[2]]))
+  temporal = confusion_matrix_evaluation_deyban(
+    table_model_kmeans_deyban_a_big, nrow(subset))
+  
+  if(temporal > best)
+  {
+    best_centroids = model_temporal[[1]]
+    best_clusters = model_temporal[[2]]
+    best = temporal
+  }
+}
+```
+
+#### Visualizando los centroides pre-calculados
+```{r}
+plot(subset[, 1:2], col = best_clusters,
+     main = paste(c("Data set", "subset"), collapse = " "),
+     sub = "K-means Personalizado",
+     xlab = "Feature 1", ylab = "Feature 2")
+
+points(best_centroids[,1:2],
+       col = 6:8,
+       pch = 19,
+       cex = 2)
+```
+
+##### **Generando el modelo real**
+
+```{r}
+model_big = K_Means_Deyban(df_a_big, 3, best_centroids)
+```
+
+##### **Calculando la matriz de confusión**
+
+```{r}
+table_model_kmeans_model_big = order_confusion_matrix(
+  confusion_matrix(df_a_big$V3, model_big[[2]]))
+table_model_kmeans_model_big
+```
+
+##### **Calculando la tasa de acierto**
+
+```{r}
+confusion_matrix_evaluation(table_model_kmeans_model_big, nrow(df_a_big))
+```
+
+##### **Visualizando la salida**
+
+```{r}
+plot(df_a_big[, 1:2], col = model_big[[2]],
+     main = paste(c("Data set", "a_big.csv"), collapse = " "), sub = "K-means propio",
+     xlab = "Feature 1", ylab = "Feature 2")
+
+points(model_big[[1]][,1:2],
+       col = 6:8,
+       pch = 19,
+       cex = 2)
+```
+
+##### **Conclusión**
+El algoritmo implementado se comporta de una manera bastante aceptable, es importante remarcar el hecho de que pre-calcular los centroides ayuda a que la convergencia sea mucho más rápida y posee unos valores parecidos a los centroides reales obtenidos por el algoritmo propuesto en la función **kmeans** de R.
+
+## **moon.csv**
+
+### **Cargando el conjunto de datos**
+
+```{r}
+df_moon = read.csv("../data/moon.csv",header = F)
+```
+
+### **Pre-procesamietno**
+La columna de clases está en el rango [0,1] y la llevaremos al rango [1,2].
+
+```{r}
+df_moon = pre_processing(df_moon)
+```
+
+### **Visualizando el conjunto de datos**
+
+Realizamos la gráfica para poder analizar al conjunto de datos **moon.csv**.
+
+```{r}
+plot(df_moon[,1:2], col = df_moon$V3,
+     xlab = "Feature 1", ylab = "Feature 2",
+     main = "moon.csv")
+```
+
+En el gráfico podemos observar dos (2) clusters con forma de semi-luna, por la estructura, el algoritmo **H-Clust Single** debería ser el que mejor se comporte.
+
+### **Aplicando los algoritmos**
+
+#### **K-Medias**
+
+##### **Generando el modelo** 
+
+```{r}
+model_kmeans_moon = eval_kmeans(df = df_moon, cstart = 1,
+                                cfinish = 2, k = 2, dataname = "moon.csv")
+```
+
+##### **Generando la matriz de confusión** 
+
+```{r}
+table_model_kmeans_moon = order_confusion_matrix(
+  confusion_matrix(df_moon$V3, model_kmeans_moon$cluster))
+table_model_kmeans_moon
+```
+
+##### **Evaluando la matriz de confusión**
+
+```{r}
+confusion_matrix_evaluation(table_model_kmeans_moon, nrow(df_moon))
+```
+
+##### **Conclusión**
+
+El algortimo K-Medias no tiene un buen desempeño por su naturaleza de buscar figuras circulares o superficies cilíndricas.
+
+#### **H-Clust**
+
+Necesitamos calcular la **matriz de distancias** antes de aplicar el algoritmo.
+
+```{r}
+input_hierarchical_moon = df_moon
+input_hierarchical_moon$V3 = NULL
+input_hierarchical_moon = as.matrix(input_hierarchical_moon)
+hierarchical_distance_moon = dist(input_hierarchical_moon)
+```
+
+#### **H-Clust Single**
+
+##### **Generando el modelo** 
+
+```{r}
+model_hierarchical_single_moon = eval_hclust(
+  distance = hierarchical_distance_moon, mode = "single",
+  centroids = 2, input = input_hierarchical_moon, dataname = "moon.csv")
+```
+
+##### **Generando la matriz de confusión** 
+
+```{r}
+table_model_hierarchical_single_moon = order_confusion_matrix(
+  confusion_matrix(df_moon$V3, model_hierarchical_single_moon))
+table_model_hierarchical_single_moon
+```
+
+##### **Evaluando la matriz de confusión**
+
+```{r}
+confusion_matrix_evaluation(table_model_hierarchical_single_moon, nrow(df_moon))
+```
+
+##### **Conclusión**
+
+Como se puede apreciar este algoritmo tiene una precisión del 100%, debido a su naturaleza de ajustarse a formas no circulares o cilíndricas.
+
+#### **H-Clust Complete**
+
+##### **Generando el modelo** 
+
+```{r}
+model_hierarchical_complete_moon = eval_hclust(
+  distance = hierarchical_distance_moon, mode = "complete",
+  centroids = 2, input = input_hierarchical_moon, dataname = "moon.csv")
+```
+
+##### **Generando la matriz de confusión** 
+
+```{r}
+table_model_hierarchical_complete_moon = order_confusion_matrix(
+  confusion_matrix(df_moon$V3, model_hierarchical_complete_moon))
+table_model_hierarchical_complete_moon
+```
+
+##### **Evaluando la matriz de confusión**
+
+```{r}
+confusion_matrix_evaluation(table_model_hierarchical_complete_moon, nrow(df_moon))
+```
+
+##### **Conclusión**
+
+H-Clust Complete se comporta de manera similar a K-Medias, por lo que tiene un desempeño que deja mucho que desear.
+
+#### **H-Clust Average**
+
+##### **Generando el modelo** 
+
+```{r}
+model_hierarchical_average_moon = eval_hclust(
+  distance = hierarchical_distance_moon, mode = "average",
+  centroids = 2, input = input_hierarchical_moon, dataname = "moon.csv")
+```
+
+##### **Generando la matriz de confusión** 
+
+```{r}
+table_model_hierarchical_average_moon = order_confusion_matrix(confusion_matrix(df_moon$V3, model_hierarchical_average_moon))
+table_model_hierarchical_average_moon
+```
+
+##### **Evaluando la matriz de confusión**
+
+```{r}
+confusion_matrix_evaluation(table_model_hierarchical_average_moon, nrow(df_moon))
+```
+
+##### **Conclusión**
+
+H-Clust average, tampoco muestra un buen rendimiento, debido a que las estructuras a la que mejor se ajusta este algoritmo es a aquellas que son circulares son patrones desordenados en los bordes.
+
+### Conclusión general
+
+Por la estructura de semi-luna del conjunto de datos, el algoritmo **H-Clust Single** es el único que se ajusta bien al modelo, todos los demás algoritmos no generan un buen modelo.
+
+## **Análisis con clases reales**
+Consta de tres conjuntos de datos:
+
+* h.csv
+* s.csv
+* help.csv
+ 
+ Vamos a empezar a trabajar en ellos.
+ 
+## **h.csv**
+ 
+### **Cargando el conjunto de datos**
+ 
+```{r}
+df_h = read.csv("../data/h.csv",header = F)
+```
+
+### **Pre-procesamiento**
+
+Veamos el rango de los valores de las clases de **h.csv**.
+
+```{r}
+summary(df_h$V4)
+```
+
+Queremos colocar los valores de la columna de clases en el rango [1,11] en vez del [4, 15].
+
+```{r}
+df_h$V5 = floor(df_h$V4) - min(floor(df_h$V4)) +1
+```
+
+### **Visualizando el conjunto de datos**
+
+Matriz de dispersión
+
+```{r}
+plot(df_h[1:3], col= get_colors(11, df_h),
+     main = "Matriz Dispersion h.csv")
+```
+
+Gráfico 3D
+
+```{r, fig.width = 3 , fig.height = 3, fig.align = "center", webgl=TRUE}
+plot3d(df_h$V1, df_h$V2, df_h$V3, col=get_colors(11, df_h),
+       type="s", xlab = "Feature 1", ylab = "Feature 2", zlab = "Feature 3",
+       main= "Data Set h.csv")
+```
+
