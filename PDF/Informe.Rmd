@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ##### **Abstract** 
 
-En **Aprendizaje no Supervizado** no se cuenta con la sección de clases reales de los elementos del conjunto de entrenamiento, cosa que complica un poco las cosaas y hace esencial un buen uso de análisis exploratorio de los datos para poder determinar los algortimos y parámetros adecuados para lograr un buen modelo.
+En **Aprendizaje no Supervizado** no se cuenta con la sección de clases reales de los elementos del conjunto de entrenamiento, cosa que complica un poco las cosas y hace esencial un buen uso de análisis exploratorio de los datos para poder determinar los algortimos y parámetros adecuados para lograr un buen modelo.
 
 En esta ocasión vamos a utilizar cuatro técnicas de aprendizaje no supervizado:
 
@@ -20,7 +20,7 @@ En esta ocasión vamos a utilizar cuatro técnicas de aprendizaje no supervizado
 * H-Clust Complete
 * H-Clust Average
 
-Para implementar modelos a ocho (8) conjuntos de datos y compararemos cuál se ajusta mejor al problema y el motivo dle mismo.
+Para implementar modelos a ocho (8) conjuntos de datos y compararemos cuál se ajusta mejor al problema y el motivo del mismo.
 
 # **Estructura**
 
@@ -30,25 +30,24 @@ Vamos a dividir el problema en tres (3) partes:
 
 * **Análisis con clases reales**: donde la columna clase corresponde a valores reales que ameritan de una transformación para definir las clases.
 
-* **Análisis sin columna de clase**: donde no hay columna de clase y se amerita aplicar en su totalidad el la técnica de aprendizaje no supervisada.
+* **Análisis sin columna de clase**: donde no hay columna de clase y se amerita aplicar en su totalidad la técnica de aprendizaje no supervisado.
 
 # **Dependencias**
-Utilizaremos la biblioteca "rgl" de R que nos permite realizar gráficos en 3D de una manera rápida y sencilla que nos ayudará a hacer un buen análisis exploratorio más adelante. 
 
-Para instalarar dicho paquete, ejecutar el siguiente comando en la terminalk de **Ubuntu**:
+Utilizaremos la biblioteca "scatterplot3d" de R que nos permite realizar gráficos en 3D de una manera rápida y sencilla que nos ayudará a hacer un buen análisis exploratorio más adelante. 
+
+Para instalarar dicho paquete, ejecutar el siguiente comando en la terminal de **Ubuntu**:
 
 * sudo apt-get install r-cran-rgl
 
-Una vez que se haya instalado la biblioteca, debemos cargarla, haciendo usod el siguiente comando:
+Una vez que se haya instalado la biblioteca, debemos cargarla, haciendo uso del siguiente comando:
 
-```{r Cargando biblioteca rgl}
-library(rgl)
-library(knitr)
+```{r Cargando biblioteca scatterplot3d}
 library(scatterplot3d)
 ```
 
 # **Implementación**
-Sólo utilizaremos la biblioteca **rgl** cómo biblioteca externa, todas las demás ya vienen por defecto en **R**, ahora vamos a definir algunas funciones que nos ayuudarán a facilitar nuestro trabajo.
+Sólo utilizaremos la biblioteca **scatterplot3d** cómo biblioteca externa, todas las demás ya vienen por defecto en **R**, ahora vamos a definir algunas funciones que nos ayudarán a facilitar nuestro trabajo.
 
 ## **Funciones**
 
@@ -146,7 +145,7 @@ eval_kmeans_3D = function(df, cstart, cfinish, k, dataname)
 
 ### **Evaluación de H-Clust para conjuntos 2D**
 
-Función que general el modelo H-Clust con el tipo de método pasado cómo parámetro y grafica el resultado de aplicar el modelo.
+Función que genera el modelo H-Clust con el tipo de método pasado cómo parámetro y grafica el resultado de aplicar el modelo.
 
 ```{r H-Clust 2D}
 eval_hclust = function(distance, mode, centroids, input, dataname)
@@ -164,7 +163,7 @@ eval_hclust = function(distance, mode, centroids, input, dataname)
 
 ### **Evaluación de H-Clust para conjuntos 2D especial para good_luck.csv**
 
-Función que general el modelo H-Clust con el tipo de método pasado cómo parámetro y grafica el resultado de aplicar el modelo, pero imprime la matriz de dispersión entre las componentes.
+Función que genera el modelo H-Clust con el tipo de método pasado cómo parámetro y grafica el resultado de aplicar el modelo, pero imprime la matriz de dispersión entre las componentes.
 
 ```{r H-Clust 2D good_luck}
 eval_hclust_especial = function(distance, mode, centroids, input, dataname,cfinish)
@@ -182,7 +181,8 @@ eval_hclust_especial = function(distance, mode, centroids, input, dataname,cfini
 
 ### **Evaluación de H-Clust para conjuntos 3D**
 
-Función que general el modelo H-Clust con el tipo de método pasado cómo parámetro y grafica el resultado de aplicar el modelo en 3D.
+Función que genera el modelo H-Clust con el tipo de método pasado cómo parámetro y grafica el resultado de aplicar el modelo en 3D.
+
 ```{r H-Clust 3D, fig.width = 6 , fig.height = 6, fig.align = "center"}
 eval_hclust_3D = function(distance, mode, centroids, input, dataname)
 {
@@ -245,7 +245,7 @@ sum_diagonal = function(matrix)
 
 ### **Tasa de acierto del modelo**
 
-Función que retona la tasa de acierto y de fallo de un modelo.
+Función que retorna la tasa de acierto y de fallo de un modelo.
 
 ```{r}
 confusion_matrix_evaluation = function(confusionMatrix, numberRows)
@@ -311,7 +311,7 @@ order_confusion_matrix = function(confusionMatrix)
 
 ### **Tasa de acierto del modelo para mi implementación de K-Means**
 
-Función que retona exclusivamente la tasa de acierto de un modelo.
+Función que retorna exclusivamente la tasa de acierto de un modelo.
 
 ```{r}
 confusion_matrix_evaluation_deyban = function(confusionMatrix, numberRows)
@@ -389,7 +389,8 @@ K_Means_Deyban = function(df, k, c = NULL)
       c2.temp = length(clusters[clusters == 2])
       c3.temp = length(clusters[clusters == 3])  
       
-      if((c1 == c1.temp) && (c2 == c2.temp) && (c3 == c3.temp)) # If the elements between iterations dont have changes
+      # If the elements between iterations dont have changes
+      if((c1 == c1.temp) && (c2 == c2.temp) && (c3 == c3.temp))
       {
         #return
         my_list = list(centroids, clusters)
@@ -409,52 +410,26 @@ K_Means_Deyban = function(df, k, c = NULL)
 }
 ```
 
-
-```{r}
-hook_webgl = function(before, options, envir) {
-  library(rgl)
-  ## after a chunk has been evaluated
-  if (before || rgl.cur() == 0) return()  # no active device
-  name = tempfile('rgl', '.', '.html'); on.exit(unlink(name))
-  par3d(windowRect = 100 + options$dpi * c(0, 0, options$fig.width, options$fig.height))
-  Sys.sleep(.05) # need time to respond to window size change
-
-  writeLines(c('%WebGL%', '<script>webGLStart();</script>'), tpl <- tempfile())
-  writeWebGL(dir = dirname(name), filename = name, template = tpl)
-  res = readLines(name)
-  res = res[!grepl('^\\s*$', res)] # remove blank lines
-  paste(gsub('^\\s*<', '<', res), collapse = '\n') # no spaces before HTML tags
-}
-
-```
-
-
-
-
-```{r}
-knit_hooks$set(webgl = hook_webgl)
-```
-
-
-
 ## **Análisis con clases enteras**
 Consta de tres conjuntos de datos:
 
 * a.csv
 * a_big.csv
 * moon.csv
+* good_luck.csv
  
- Vamos a empezar a trabajar en ellos
+ Vamos a empezar a trabajar en ellos.
  
 ## **a.csv**
 
 ### **Cargando el conjunto de datos**
-Cargamos en **df_a** el conjunto de datos
+
 ```{r Cargando a.csv}
 df_a = read.csv("../data/a.csv",header = F)
 ```
-### **Pre-procesamietno**
-La columna de clases está en el rango [0,1] y la llevaremos al rango [1,2]
+### **Pre-procesamiento**
+
+La columna de clases está en el rango [0,1] y la llevaremos al rango [1,2].
 
 ```{r Pre-procesamiento df_a}
 df_a = pre_processing(df_a)
@@ -462,7 +437,7 @@ df_a = pre_processing(df_a)
 
 ### **Visualizando el conjunto de datos**
 
-Realizamos la gráfica para poder analizar al conjunto de datos **a.csv**
+Realizamos la gráfica para poder analizar al conjunto de datos **a.csv**.
 
 ```{r Visualizando a.csv}
 plot(df_a[,1:2], col = df_a$V3,
@@ -500,7 +475,7 @@ confusion_matrix_evaluation(table_model_kmeans_a, nrow(df_a))
 
 ##### **Conclusión**
 
-K-Medias funciona muy bien para este conjunto de datos or la naturaleza del algoritmo de buscar figuras circulares o superficies cilíndricas, en este caso se puede apreciar una alta tasa de acierto.
+K-Medias funciona muy bien para este conjunto de datos por la naturaleza del algoritmo de buscar figuras circulares o superficies cilíndricas, en este caso se puede apreciar una alta tasa de acierto.
 
 #### **H-Clust**
 
@@ -566,6 +541,7 @@ confusion_matrix_evaluation(table_model_hierarchical_complete_a, nrow(df_a))
 ```
 
 ##### **Conclusión**
+
 H-Clust complete se comporta parecido a K-Medias con respecto a que trata de buscar figuras circulares o cilíndricas, sin embargo en este caso no funcionó de la mejor manera, ya que confunde parte de los elementos de un cluster notablemente, disminuyendo así la tasa de aciertos.
 
 #### **H-Clust Average**
@@ -603,15 +579,14 @@ Porla estructura circular del conjunto de datos, todos los algoritmos menos **H-
 ## **a_big.csv**
 
 ### **Cargando el conjunto de datos**
-Cargamos en **df_a_big** el conjunto de datos
 
 ```{r Cargando a_big .csv}
 df_a_big = read.csv("../data/a_big.csv",header = F)
 ```
 
-### **Pre-procesamietno**
+### **Pre-procesamiento**
 
-La columna de clases está en el rango [0,1] y la llevaremos al rango [1,2]
+La columna de clases está en el rango [0,1] y la llevaremos al rango [1,2].
 
 ```{r Pre-procesamiento a_big.csv}
 df_a_big = pre_processing(df_a_big)
@@ -619,13 +594,13 @@ df_a_big = pre_processing(df_a_big)
 
 ### **Visualizando el conjunto de datos**
 
-Primero vamos a ver la cantidad de elementos que tenemos en **a_big-csv**
+Primero vamos a ver la cantidad de elementos que tenemos en **a_big-csv**.
 
 ```{r Ocurrencias en a_big.csv}
 nrow(df_a_big)
 ```
 
-Vemos que tenemos **trescientas mil** (300000) ocurrencias que es un número bastante grande. Y debido a esto no podremos aplicar algoritmos **H-Clust** debido a que le tamaño d ela matriz de distancias no cabe en memoria principal.
+Vemos que tenemos **trescientas mil** (300000) ocurrencias que es un número bastante grande. Y debido a esto no podremos aplicar algoritmos **H-Clust** debido a que el tamaño de la matriz de distancias no cabe en memoria principal.
 
 Veamos la gráfica para poder analizar al conjunto de datos **a_big.csv**
 
@@ -635,11 +610,11 @@ plot(df_a_big[,1:2], col = df_a_big$V3,
      main = "a_big.csv")
 ```
 
-En el gráfico podemos observar tres (3) clusters juntos ocn una forma más o menos circular, por lo tanto el algoritmo de **K-Medias** debería funcionar de buena manera.
+En el gráfico podemos observar tres (3) clusters juntos con una forma más o menos circular, por lo tanto el algoritmo de **K-Medias** debería funcionar de buena manera.
 
 ### **Aplicando los algoritmos**
 
-Cómo se mencionó más arriba, sólo podremos aplicar el algoritmo de **K-Medias** para clusterizar debido a que con **H-Clust** la matriz de distancias es demasiado grande y no cabe en memoria principal, comenzaremos primero con la versión del algoritmo propuesta por **R**.
+Cómo se mencionó más arriba, sólo podremos aplicar el algoritmo de **K-Medias** para clusterizar debido a que con **H-Clust** la matriz de distancias es demasiado grande y no cabe en memoria principal, comenzaremos primero con la versión del algoritmo propuesto por **R**.
 
 #### **K-Medias**
 
@@ -729,6 +704,7 @@ for (i in 1:50)
 ```
 
 #### Visualizando los centroides pre-calculados
+
 ```{r}
 plot(subset[, 1:2], col = best_clusters,
      main = paste(c("Data set", "subset"), collapse = " "),
@@ -775,6 +751,7 @@ points(model_big[[1]][,1:2],
 ```
 
 ##### **Conclusión**
+
 El algoritmo implementado se comporta de una manera bastante aceptable, es importante remarcar el hecho de que pre-calcular los centroides ayuda a que la convergencia sea mucho más rápida y posee unos valores parecidos a los centroides reales obtenidos por el algoritmo propuesto en la función **kmeans** de R.
 
 ## **moon.csv**
@@ -785,7 +762,7 @@ El algoritmo implementado se comporta de una manera bastante aceptable, es impor
 df_moon = read.csv("../data/moon.csv",header = F)
 ```
 
-### **Pre-procesamietno**
+### **Pre-procesamiento**
 La columna de clases está en el rango [0,1] y la llevaremos al rango [1,2].
 
 ```{r}
@@ -931,6 +908,184 @@ H-Clust average, tampoco muestra un buen rendimiento, debido a que las estructur
 
 Por la estructura de semi-luna del conjunto de datos, el algoritmo **H-Clust Single** es el único que se ajusta bien al modelo, todos los demás algoritmos no generan un buen modelo.
 
+## **good_luck.csv**
+
+### **Cargando el conjunto de datos**
+
+```{r}
+df_good_luck = read.csv("../data/good_luck.csv",header = F)
+```
+
+### **Pre-procesamiento**
+
+Hagamos un resumen rápido del conjunto de datos.
+
+```{r}
+dim(df_good_luck)
+```
+
+Podemos ver que presenta mil (1000) filas y once (columnas), en la que la última corresponde a la columna de clases.
+
+```{r}
+summary(df_good_luck$V11)
+```
+
+Podemos observar cómo el rango de los valores de dicha columna está en [0,1] y queremos colocarlas en el rango [1,2].
+
+```{r}
+df_good_luck = pre_processing_especial(df_good_luck)
+```
+
+```{r}
+summary(df_good_luck$V11)
+```
+
+Ahora que tenemos el conjunto de datos podemos graficarlo.
+
+### **Visualizando el conjunto de datos**
+
+```{r}
+plot(df_good_luck[,1:10], col = df_good_luck$V11,
+     main = "Matriz de Dispersion good_luck.csv")
+```
+
+Lo primero que podemos destacar es el hecho de que este conjunto de datos tiene diez (10) dimensiones, y que poder ver a simple vista cuál es la estructura del conjunto de datos es bastante complicado. Adicionalmente podemos ver cómo en cada una de los gráficos de las vistas, los puntos se solapan entre si, no dejando fronteras bien definidas entre cada clase. sin embargo parece ser que la estructura es de forma circular, por la forma en que aparece en la matriz de dispersión.
+
+### **Aplicando los algoritmos**
+
+#### **K-Medias**
+
+##### **Generando el modelo** 
+
+```{r}
+model_kmeans_good_luck = eval_kmeans_especial(
+  df = df_good_luck, cstart = 1, cfinish = 10,
+  k = 2, dataname = "good_luck.csv")
+```
+
+##### **Generando la matriz de confusión**
+
+```{r}
+table_model_kmeans_good_luck = order_confusion_matrix(
+  confusion_matrix(df_good_luck$V11, model_kmeans_good_luck$cluster))
+table_model_kmeans_good_luck
+```
+
+##### **Evaluando la matriz de confusión**
+
+```{r}
+confusion_matrix_evaluation(table_model_kmeans_good_luck, nrow(df_good_luck))
+```
+
+##### **Conclusión**
+
+El algoritmo presenta sólo 50% de acierto, aunque a priori el conjunto de datos parece ser esférico el hecho de que posiblemente estén no separados de manera notable hace que se equivoque en la mitad de las veces.
+
+#### **H-Clust**
+
+Necesitamos calcular la **matriz de distancias** antes de aplicar el algoritmo.
+
+```{r}
+input_hierarchical_good_luck = df_good_luck
+input_hierarchical_good_luck$V11 = NULL
+input_hierarchical_good_luck = as.matrix(input_hierarchical_good_luck)
+hierarchical_distance_good_luck = dist(input_hierarchical_good_luck)
+```
+
+#### **H-Clust Single**
+
+##### **Generando el modelo** 
+
+```{r}
+model_hierarchical_single_good_luck = eval_hclust_especial(
+  distance = hierarchical_distance_good_luck, mode = "single",
+  centroids = 2, input = input_hierarchical_good_luck, dataname = "good_luck.csv",
+  cfinish = 10)
+```
+
+##### **Generando la matriz de confusión** 
+
+```{r}
+table_model_hierarchical_single_good_luck = order_confusion_matrix(
+  confusion_matrix(df_good_luck$V11, model_hierarchical_single_good_luck))
+table_model_hierarchical_single_good_luck
+```
+
+##### **Evaluando la matriz de confusión**
+
+```{r}
+confusion_matrix_evaluation(table_model_hierarchical_single_good_luck,
+                            nrow(df_good_luck))
+```
+
+##### **Conclusión**
+
+La tasa de acierto es de 51% sin embargo se puede ver cómo se clasificaron todos los elementos menos uno como un sólo cluster, lo que nos da a entender que por la naturaleza del algoritmo de buscar aquellos clusters que poseen formas no circulares y con límites bien defnidos, el conjunto de datos presenta justamente lo contrario, apoyando nuestro análisis exploratorio.
+
+#### **H-Clust Complete**
+
+##### **Generando el modelo** 
+
+```{r}
+model_hierarchical_complete_good_luck = eval_hclust_especial(
+  distance = hierarchical_distance_good_luck, mode = "complete",
+  centroids = 2, input = input_hierarchical_good_luck, dataname = "good_luck.csv",
+  cfinish = 10)
+```
+
+##### **Generando la matriz de confusión** 
+
+```{r}
+table_model_hierarchical_complete_good_luck = order_confusion_matrix(
+  confusion_matrix(df_good_luck$V11, model_hierarchical_complete_good_luck))
+table_model_hierarchical_complete_good_luck
+```
+
+##### **Evaluando la matriz de confusión**
+
+```{r}
+confusion_matrix_evaluation(table_model_hierarchical_complete_good_luck,
+                            nrow(df_good_luck))
+```
+
+##### **Conclusión**
+
+El algoritmo se comporta mejor que los otros dos anteriores, sin embargo sigue teniendo el mismo comportamiento de querer colocar la mayoría de los puntos en un sólo cluster, debido a la ausencia de una frontera bien definida entre las clases.
+
+#### **H-Clust Average**
+
+##### **Generando el modelo**
+
+```{r}
+model_hierarchical_average_good_luck = eval_hclust_especial(
+  distance = hierarchical_distance_good_luck, mode = "average",
+  centroids = 2, input = input_hierarchical_good_luck, dataname = "good_luck.csv",
+  cfinish = 10)
+```
+
+##### **Generando la matriz de confusión**
+
+```{r}
+table_model_hierarchical_average_good_luck = order_confusion_matrix(
+  confusion_matrix(df_good_luck$V11, model_hierarchical_average_good_luck))
+table_model_hierarchical_average_good_luck
+```
+
+##### **Evaluando la matriz de confusión**
+
+```{r}
+confusion_matrix_evaluation(
+  table_model_hierarchical_average_good_luck, nrow(df_good_luck))
+
+```
+
+##### **Conclusión**
+Se comporta parecido a **H-Clust Single**, con un error del 50% pero tratando de colocar todos los elementos dentro de un mismo cluster.
+
+#### **Conclusión general**
+
+Este conjunto de datos posee una estructura muy complicada y difícil de poder separar, ninguno de los algoritmos que se probaron funciona de buena manera, esto debido a que las clases no poseen separaciones marcadas entre si y que posiblemente las clases estén superpuestas una sobre otra, ya que el algoritmo de **K-Medias** Se equivocó en la mitad de los casos pero tuvo una distribución más equitativas de la matriz de confusión con respecto a la cardinalidad de las columnas de la matriz.
+
 ## **Análisis con clases reales**
 Consta de tres conjuntos de datos:
 
@@ -981,7 +1136,7 @@ scatterplot3d(df_h$V1, df_h$V2, df_h$V3,
        main= "Data Set h.csv")
 ```
 
-Se pueden observar once (11) colores, donde cada color corresponde a una clase independiente, sin embargo, existen clases que contienen poco individuos, lo que se hará, es llevar las clases a valores en el rango [1,7] para representar de mejor manera el conjunto de datos.
+Se pueden observar once (11) colores, donde cada color corresponde a una clase independiente, sin embargo, existen clases que contienen pocos individuos, lo que se hará, es llevar las clases a valores en el rango [1,7] para representar de mejor manera el conjunto de datos.
 
 ```{r}
 df_h$V5 = NULL
@@ -1124,7 +1279,7 @@ Este modelo es el que mejor se ajusta de todos los evaluados, sin embargo sigue 
 
 #### **Conclusión general**
 
-Ninguno de los algoritmos aplicados funciona de una manera correcta ára este conjunto de datos debido a la naturaleza del mismo, presenta una forma en espiral que los algoritmos de **K-Medias** y **H-Clust** no saben interpretar, presentando un pobre rendimiento.
+Ninguno de los algoritmos aplicados funciona de una manera correcta para este conjunto de datos debido a la naturaleza del mismo, presenta una forma en espiral que los algoritmos de **K-Medias** y **H-Clust** no saben interpretar, presentando un pobre rendimiento. Podrían evaluarse otros algoritmos que se adaptaran mejor a este tipo de problemas tales como **Spectral CLustering**.
 
 ## **s.csv**
 
@@ -1165,7 +1320,7 @@ scatterplot3d(df_s$V1, df_s$V2, df_s$V3, color = get_colors(11, df_s),
        main= "Data Set s.csv")
 ```
 
-Podemos once (11) clases, que se presentan de manera muy similar al conjunto de datos **h.csv**, de igual manera, hay clases que constan de muy pocos individuos que vamos a compactar para llevarlas al rango [1, 7] para mejor representación del conjunto de datos.
+Podemos ver once (11) clases, que se presentan de manera muy similar al conjunto de datos **h.csv**, de igual manera, hay clases que constan de muy pocos individuos que vamos a compactar para llevarlas al rango [1, 7] para mejor representación del conjunto de datos.
 
 ```{r}
 df_s$V5 = NULL
@@ -1250,4 +1405,368 @@ confusion_matrix_evaluation(table_model_hierarchical_single_s, nrow(df_s))
 
 #### Conclusión
 
-Pasa lo mismo que en **h.csv** y cómo los clusters están unidos, el algoritmos los toma todos cómo si fueran uno solo y tiene un pésimo rendimiento.
+Pasa lo mismo que en **h.csv**, cómo los clusters están unidos, el algoritmo los toma todos cómo si fueran uno solo y tiene un pésimo rendimiento.
+
+#### **H-Clust Complete**
+
+##### **Generando el modelo** 
+
+```{r, fig.width = 6 , fig.height = 6, fig.align = "center"}
+model_hierarchical_complete_s = eval_hclust_3D(
+  distance = hierarchical_distance_s, mode = "complete", centroids = 7,
+  input = input_hierarchical_s, dataname = "s.csv")
+```
+
+##### **Generando la matriz de confusión** 
+
+```{r}
+table_model_hierarchical_complete_s = order_confusion_matrix(confusion_matrix(
+  df_s$class, model_hierarchical_complete_s))
+table_model_hierarchical_complete_s
+```
+
+##### **Evaluando la matriz de confusión** 
+
+```{r}
+confusion_matrix_evaluation(table_model_hierarchical_complete_s, nrow(df_s))
+```
+
+##### **Conclusión**
+
+H-Clust Complete se comporta de manera similiar a K-Medias tratando de buscar superficies cilíndricas que no están presentes en este conjunto de datos y por ello el desempeño es pobre.
+
+#### **H-Clust Average**
+
+##### **Generando el modelo** 
+
+```{r, fig.width = 6 , fig.height = 6, fig.align = "center"}
+model_hierarchical_average_s = eval_hclust_3D(
+  distance = hierarchical_distance_s, mode = "average", centroids = 7,
+  input = input_hierarchical_s, dataname = "s.csv")
+```
+
+##### **Generando la matriz de confusión**
+
+```{r}
+table_model_hierarchical_average_s = order_confusion_matrix(
+  confusion_matrix(df_s$class, model_hierarchical_average_s))
+table_model_hierarchical_average_s
+```
+
+##### **Evaluando la matriz de confusión**
+
+```{r}
+confusion_matrix_evaluation(table_model_hierarchical_average_s, nrow(df_s))
+```
+
+##### **Conclusión general**
+
+Por la naturaleza del conjunto de datos, ninguno de los algoritmos evaluados se comporta de buena manera, ya que los algoritmos utilizados buscan superficies cilíndricas o tratan de ajustarse a formas extrañas si los puntos están muy unidos, cómo es el caso de **H-Clust Single**. Existen otros algoritmos de clustering que se adaptan mejor a este tipo de problemas, tales como **Spectral Clustering**.
+
+## **help.csv**
+
+### **Cargando el conjunto de datos**
+
+```{r}
+df_help = read.csv("../data/help.csv",header = F)
+```
+
+### **Pre-procesamiento**
+
+Veamos el rango de número presentes en la columna de clases.
+
+```{r}
+summary(df_help$V4)
+```
+
+Podemos ver cómo el rango va desde [-4.712, 14.14], queremos hacer que este rango empiece desde el número uno (1).
+
+```{r}
+df_help$V5 = floor(df_help$V4) - min(floor(df_help$V4)) +1
+```
+
+Si volvemos a inspeccionar el rango de valores de las nuevas clases calculadas.
+
+```{r}
+summary(df_help$V5)
+```
+
+Podemos ver cómo ahora el rango va desde [1, 20], mostrando el siguiente gráfico:
+
+```{r}
+plot(df_help[,1:3], col= get_colors(20, df_help),
+     main = "Matriz Dispersion help.csv")
+```
+
+```{r, fig.width = 6 , fig.height = 6, fig.align = "center"}
+scatterplot3d(df_help$V1, df_help$V2, df_help$V3, color = get_colors(20, df_help),
+       type="p", xlab = "Feature 1", ylab = "Feature 2", zlab = "Feature 3",
+       main= "Data Set help.csv")
+```
+
+Donde podemos ver las letras "SOS", las letras "S" tienen el mismo comportamiento que el conjunto de datos **s.csv** y la letra "O", tiene el mismo comportamiento que nuestro conjunto de datos **h.csv** evaluados previamente. Dicho esto, y por el rendimiento y las conlusiones que sacamos luego de aplicar los diferentes algoritmos sobre cada uno de los elementos individualmente, donde pudimos notar que los algoritmos utilizados no se ajustaron precisamente bien a los modelos, podemos tratar este problema de una manera diferente.
+
+Al conjunto de datos presentar elementos que luego puden ser evaluados individualmente, se puede hacer una evaluación a dos (2) niveles, en donde en el primer nivel, se identificaría el tipo de letra que representa **S** u **O** y luego se podría aplicar un análisis detallado o específico a dicha letra luego de ser localizada, por lo mismo, nuestro criterio fue el de colocar sólo tres (3) clusters dentro de este conjunto de datos, de tal manera que luego que podamos identificar cada elemento individualmente podamos tratarlo de manera específica. Por lo tanto el primer paso, será el de llevar el rango de valor de las clases entre [1,3].
+
+```{r}
+df_help$V5 = NULL
+df_help$class = 2
+df_help$class[df_help$V1 < 10] = 1
+df_help$class[df_help$V1 > 42] = 3
+```
+
+Lo que hicimos fue explorar sobre el eje "X" el dominio de las letras y lo delimitamos para poder marcar cada elemento de forma correcta, derivando en el siguiente gráfico.
+
+```{r, fig.width = 6 , fig.height = 6, fig.align = "center"}
+scatterplot3d(df_help$V1, df_help$V2, df_help$V3, color = df_help$class,
+       type="p", xlab = "Feature 1", ylab = "Feature 2", zlab = "Feature 3",
+       main= "Data Set help.csv")
+```
+
+Ahora que tenemos listo nuestro conjunto de datos en la forma en que queremos, podemos empezar a aplicar los distintos algoritmos.
+
+### **Aplicando los algoritmos**
+
+#### **K-Medias**
+
+##### **Generando el modelo** 
+
+```{r, fig.width = 6 , fig.height = 6, fig.align = "center"}
+model_kmeans_help = eval_kmeans_3D(df = df_help, cstart = 1, cfinish = 3, k = 3, dataname = "help.csv")
+```
+
+##### **Generando la matriz de confusión**
+
+```{r}
+table_model_kmeans_help = order_confusion_matrix(confusion_matrix(df_help$class, model_kmeans_help$cluster))
+table_model_kmeans_help
+```
+
+##### **Evaluando la matriz de confusión**
+
+```{r}
+confusion_matrix_evaluation(table_model_kmeans_help, nrow(df_help))
+```
+
+##### **Conclusión**
+
+El algoritmo presenta un excelente desempeño ya que puede ubicar las superficies cilíndricas "S" y esféricas "O" de gran manera, presentando una tasa de acierto excelente.
+
+#### **H-Clust**
+
+Necesitamos calcular la **matriz de distancias** antes de aplicar el algoritmo.
+
+```{r}
+input_hierarchical_help = df_help
+input_hierarchical_help$V4 = NULL
+input_hierarchical_help$class = NULL
+input_hierarchical_help = as.matrix(input_hierarchical_help)
+hierarchical_distance_help = dist(input_hierarchical_help)
+```
+
+#### **H-Clust Single**
+
+##### **Generando el modelo** 
+
+```{r, fig.width = 6 , fig.height = 6, fig.align = "center"}
+model_hierarchical_single_help = eval_hclust_3D(
+  distance = hierarchical_distance_help, mode = "single",
+  centroids = 3, input = input_hierarchical_help, dataname = "help.csv")
+```
+
+##### **Generando la matriz de confusión**
+
+```{r}
+table_model_hierarchical_single_help = order_confusion_matrix(
+  confusion_matrix(df_help$class, model_hierarchical_single_help))
+table_model_hierarchical_single_help
+```
+
+##### **Evaluando la matriz de confusión**
+
+```{r}
+confusion_matrix_evaluation(table_model_hierarchical_single_help, nrow(df_help))
+```
+
+##### **Conclusión**
+
+Presenta un excelente rendimiento por la estructura continua con fronteras bien separables entre sus elementos.
+
+#### **H-Clust Complete**
+
+##### **Generando el modelo** 
+
+```{r, fig.width = 6 , fig.height = 6, fig.align = "center"}
+model_hierarchical_complete_help = eval_hclust_3D(
+  distance = hierarchical_distance_help, mode = "complete",
+  centroids = 3, input = input_hierarchical_help, dataname = "help.csv")
+```
+
+##### **Generando la matriz de confusión**
+
+```{r}
+table_model_hierarchical_complete_help = order_confusion_matrix(
+  confusion_matrix(df_help$class, model_hierarchical_complete_help))
+table_model_hierarchical_complete_help
+```
+
+##### **Evaluando la matriz de confusión**
+
+```{r}
+confusion_matrix_evaluation(table_model_hierarchical_complete_help, nrow(df_help))
+```
+
+##### **Conclusión**
+
+A pesar de que presenta una tasa alta de aciertos, no funciona tan bien cómo los otros dos algoritmos evaluados anteriormente, ya que mezcla parte de las "S" con la "O".
+
+#### **H-Clust Average**
+
+##### **Generando el modelo** 
+
+```{r, fig.width = 6 , fig.height = 6, fig.align = "center"}
+model_hierarchical_average_help = eval_hclust_3D(
+  distance = hierarchical_distance_help, mode = "average",
+  centroids = 3, input = input_hierarchical_help, dataname = "help.csv")
+```
+
+##### **Generando la matriz de confusión**
+
+```{r}
+table_model_hierarchical_average_help = order_confusion_matrix(
+  confusion_matrix(df_help$class, model_hierarchical_average_help))
+table_model_hierarchical_average_help
+```
+
+##### **Evaluando la matriz de confusión**
+
+```{r}
+confusion_matrix_evaluation(table_model_hierarchical_average_help, nrow(df_help))
+```
+
+##### **Conclusión**
+
+Presenta una alta tasa de aciertos, sólo confundiendo pocos elementos debido a que la frontera entre los dos elementos es muy corta, sin embargo, presenta un desempeño más que bueno.
+
+#### **Conclusión general**
+
+El algoritmo con mejor desempeño fue **H-Clust Single**, que sólo falló en un elemento a la hora de clasificar, sin embargo, en promedio todos los algoritmos se comportaron de una forma excelente. Con este enfoque de dos capas, tenemos un gran modelo para identificar un elemento y luego, aplicamos otro modelo individualmente a cada elemnto para poder clusterizar individualmente. 
+
+Este enfoque a dos niveles se puede presentar en escenarios cómo en ataques de seguridad o detección de anomalías, en los cuales, primero se aplica un modelo para detectar una anomalía y luego, se aplica otro modelo para determinar que tipo de anomalía es.
+
+## **Análisis sin columna de clase**
+
+Consta de un conjunto de datos llamado **guess.csv**, este conjunto de datos no tiene columna de clase, de tal manera que no podremos hacer evaluaciones del modelo desde el punto de vista de una matriz de confusión. Este tipo de escenario donde no se puede evaluar el modelo ya que no se tiene a priori la clase a la cuál pertenece cada elemento del conjunto, además resalta la necesidad de hacer un buen análisis exploratorio a fin de elegir la cantidad de clases ideal a pasar cómo parámetro a los diferentes algoritmos.
+
+## **guess.csv**
+
+### **Cargando el conjunto de datos**
+
+```{r}
+df_guess = read.csv("../data/guess.csv",header = F)
+```
+
+### **Análisis exploratorio**
+
+Veamos gráficamente al conjunto de datos **guess.csv**.
+
+```{r}
+plot(df_guess, xlab = "Feature 1", ylab = "Feature 2",
+     main = "guess.csv")
+```
+
+Podemos observar cómo a simple vista existen al menos dos (2) clusters bien separados (Parte inferior izquierda vs parte superior derecha), sin embargo el cluster más grande podría parecer que tiene alguna otra separación que a simple vista no se puede identificar. Dicho esto surge la siguiente pregunta: **¿Cómo saber el número de clusters a elegir?**
+
+Bueno existen varias técnicas, la que aplicaremos en este caso es la llamada **Codo de Jambu** en la cuál estaremos probando con diferentes valores para **k** centroides hasta elegir aquel que nos proporcione el modelo con menor error.
+
+El método de **Codo de Jambu** es un método de calibración que lo que hace es tratar de minimizar la suma de los errores para cada iteración de **k** centroides.
+
+```{r}
+valor = rep(0,30)
+
+for (k in 1:30)
+{
+  model_kmeans_guess_jambu = kmeans(df_guess, k)
+  valor[k] = model_kmeans_guess_jambu$tot.withinss
+}
+
+plot(valor, col = "blue", type = "b",
+     xlab = "K", ylab = "Error",
+     main = "Codo de Jambu")
+```
+
+Cómo se puede ver en la gráfica, la suma de los errores converge a cero (0) a medida que tendemos al infinito o a un número alto de centroides. Sin embargo la interpretación de este gráfico es la de elegir aquel **K** en el cuál la curva empieza a suavizarse y variar de manera visualmente nula, que en este caso es **K = 5**.
+
+Dicho esto, empezaremos a evaluar nuestros algoritmos con un número de centroides igual a cinco (5).
+
+### **Aplicando los algoritmos**
+
+#### **K-Medias**
+
+##### **Generando el modelo** 
+
+```{r}
+model_kmeans_guess = eval_kmeans(df = df_guess, cstart = 1, cfinish = 2, k = 5, dataname = "guess.csv")
+```
+
+##### **Conclusión**
+
+En el gráfico podemos  ver que los cinco (5) clusters generados por el modelo tienen un comportamiento circular bien definido, lo que nos hace pensar que el número de clases fue bien seleccionado y que de esta manera hicimos una buena elección del número de centroides con el método de calibración de modelos de **Codo de Jambu**.
+
+#### **H-Clust**
+
+Necesitamos calcular la **matriz de distancias** antes de aplicar el algoritmo.
+
+```{r}
+input_hierarchical_guess = df_guess
+input_hierarchical_guess$V3 = NULL
+input_hierarchical_guess = as.matrix(input_hierarchical_guess)
+hierarchical_distance_guess = dist(input_hierarchical_guess)
+```
+
+#### **H-Clust Single**
+
+##### **Generando el modelo** 
+
+```{r}
+model_hierarchical_single_guess = eval_hclust(
+  distance = hierarchical_distance_guess, mode = "single",
+  centroids = 5, input = input_hierarchical_guess, dataname = "guess.csv")
+```
+
+##### **Conclusión**
+
+Cómo hemos visto a lo largo del informe, este algoritmo no se ajusta bien a este tipo de estructuras donde el conjunto de datos presenta formas circulares y no tiene fronteras bien marcadas, y básicamente lo que hace es colocar todos los elementos dentro de un mismo cluster.
+
+#### **H-Clust Complete**
+
+##### **Generando el modelo**
+
+```{r}
+model_hierarchical_complete_guess = eval_hclust(
+  distance = hierarchical_distance_guess, mode = "complete",
+  centroids = 5, input = input_hierarchical_guess, dataname = "guess.csv")
+```
+
+##### **Conclusión**
+
+Se comporta parecido a K-Medias, sin embargo los clusters no son muy redondos, cosa que puede ser buena o mala dependiendo de la naturaleza real de los clusters en la vida real.
+
+#### **H-Clust Average**
+
+##### **Generando el modelo**
+
+```{r}
+model_hierarchical_average_guess = eval_hclust(
+  distance = hierarchical_distance_guess, mode = "average",
+  centroids = 5, input = input_hierarchical_guess, dataname = "guess.csv")
+
+```
+
+##### **Conclusión**
+
+Vemos cómo el comportamiento no tiene mucho sentido debido a que uno de los clusters parece ocupar el lugar de dos (2) simultaneamente dejando a un cluster sólo con un elemento.
+
+#### **Conclusión general**
+
+El algoritmo que parece ajustarse mejor a este conjunto de datos es **K-Medias**, ya hemos visto que la naturaleza del conjunto de datos circular es perfecta para este algoritmo. Es importante destacar la funcionalidad del método de calibración del **Codo de Jambu** debido a que es un algoritmo sumamente simple pero muy eficaz para la selección de los centroides.
